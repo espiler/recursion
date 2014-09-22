@@ -21,7 +21,7 @@ var stringifyJSON = function(obj) {
   else if (typeof(obj) == 'object' && obj != null) {
   	res = res + '{'
   	for (var key in obj) {
-      if (key !== undefined && typeof(key) !== 'function') {
+      if (key !== undefined && typeof(key) !== 'function' && obj[key] !== undefined && typeof(obj[key]) !== 'function') {
   		res = res + '"' + key + '":' + stringifyJSON(obj[key]) + ',';
       }
   	}
