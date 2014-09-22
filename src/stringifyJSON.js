@@ -7,7 +7,7 @@ var stringifyJSON = function(obj) {
   if (typeof(obj) == 'string') {
     res = res + '"' + obj + '"';
   }
-  if (typeof(obj) == 'boolean') {
+  if (typeof(obj) == 'boolean' || typeof(obj) == 'number' || obj == undefined) {
     res = res + obj;
   }
   if (Array.isArray(obj)) {
@@ -15,14 +15,18 @@ var stringifyJSON = function(obj) {
     for (var i=0;i<obj.length;i++) {
       res = res + stringifyJSON(obj[i]) + ',';
     }
-    res = res.substring(0, res.length-1) + ']'
+    if (res.length > 1) {res = res.substring(0, res.length-1)};
+    res = res + ']';
   }
-  else if (typeof(obj) == 'object') {
+  else if (typeof(obj) == 'object' && obj != null) {
   	res = res + '{'
   	for (var key in obj) {
+      if (key !== undefined && typeof(key) !== 'function') {
   		res = res + '"' + key + '":' + obj[key] + ',';
+      }
   	}
-  	res = res.substring(0, res.length-1) + '}'
+  	if (res.length > 1) {res = res.substring(0, res.length-1)};
+    res = res + '}';
   }
   return res;
 };
