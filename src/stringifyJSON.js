@@ -10,12 +10,19 @@ var stringifyJSON = function(obj) {
   if (typeof(obj) == 'boolean') {
     res = res + obj;
   }
-  if (typeof(obj) == 'object') {
+  if (Array.isArray(obj)) {
+    res = res + '['
+    for (var i=0;i<obj.length;i++) {
+      res = res + stringifyJSON(obj[i]) + ',';
+    }
+    res = res.substring(0, res.length-1) + ']'
+  }
+  else if (typeof(obj) == 'object') {
   	res = res + '{'
   	for (var key in obj) {
   		res = res + '"' + key + '":' + obj[key] + ',';
   	}
-  	res = res + '}'
+  	res = res.substring(0, res.length-1) + '}'
   }
   return res;
 };
