@@ -22,7 +22,7 @@ var stringifyJSON = function(obj) {
   	res = res + '{'
   	for (var key in obj) {
       if (key !== undefined && typeof(key) !== 'function') {
-  		res = res + '"' + key + '":' + obj[key] + ',';
+  		res = res + '"' + key + '":' + stringifyJSON(obj[key]) + ',';
       }
   	}
   	if (res.length > 1) {res = res.substring(0, res.length-1)};
