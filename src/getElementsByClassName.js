@@ -10,14 +10,15 @@ var getElementsByClassName = function(className, node){
 	if (node == undefined) {node = document.body}
 	var reg = new RegExp(className);
 	var nodeList = node.childNodes;
-	if (reg.test(node.className)) {
+	console.log(nodeList);
+	if (reg.test(node.className) && node == document.body) {
 		result.push(node)
 	}
 	for(var i=0;i<nodeList.length; i++) {
 	    if(reg.test(nodeList[i].className)){
 	    	result.push(nodeList[i]);
 	    }
-	    if (nodeList[i].tagName == "DIV") {
+	    if (nodeList[i].childNodes.length > 0) {
 	    	var next = getElementsByClassName(className, nodeList[i]);
 			if (next.length > 0) {
 				next.forEach(function(item) {
@@ -26,6 +27,7 @@ var getElementsByClassName = function(className, node){
 			}
 	    }
 	}
+	console.log(result);
 	return result;
 }
 
