@@ -4,23 +4,28 @@
 // };
 
 // But instead we're going to implement it from scratch:
-var getElementsByClassName = function(className){
+var getElementsByClassName = function(className, node){
 
 	var result = [];
+	if (node == undefined) {node = document.body}
 	var reg = new RegExp(className);
-	var nodes = document.body.childNodes;
-	var classList = document.body.classList;
-	console.log(nodes);
-	console.log(classList);
-	if (reg.test(document.body.className)) {
-		result.push(document.body)
+	var nodeList = node.childNodes;
+	if (reg.test(node.className)) {
+		result.push(node)
 	}
-	for(var i=0;i<nodes.length; i++) {
-	    if(reg.test(nodes[i].className)){
-	    	result.push(nodes[i]);
+	for(var i=0;i<nodeList.length; i++) {
+	    if(reg.test(nodeList[i].className)){
+	    	result.push(nodeList[i]);
+	    }
+	    if (nodeList[i].tagName == "DIV") {
+	    	var next = getElementsByClassName(className, nodeList[i]);
+			if (next.length > 0) {
+				next.forEach(function(item) {
+					result.push(item);
+				});
+			}
 	    }
 	}
-	console.log(result);
 	return result;
 }
 
