@@ -7,10 +7,10 @@
 var getElementsByClassName = function(className, node){
 
 	var result = [];
-	if (node == undefined) {node = document.body}
+	if (node === undefined) {node = document.body}
 	var reg = new RegExp(className);
 	var children = node.childNodes;
-	if (reg.test(node.className) && node == document.body) {
+	if (reg.test(node.className) && node === document.body) {
 		result.push(node)
 	}
 	for(var i=0;i<children.length; i++) {
