@@ -10,7 +10,6 @@ var getElementsByClassName = function(className, node){
 	if (node == undefined) {node = document.body}
 	var reg = new RegExp(className);
 	var nodeList = node.childNodes;
-	console.log(nodeList);
 	if (reg.test(node.className) && node == document.body) {
 		result.push(node)
 	}
@@ -27,7 +26,6 @@ var getElementsByClassName = function(className, node){
 			}
 	    }
 	}
-	console.log(result);
 	return result;
 }
 
