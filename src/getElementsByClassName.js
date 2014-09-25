@@ -14,7 +14,7 @@ var getElementsByClassName = function(className, node){
 		result.push(node)
 	}
 	for(var i=0;i<children.length; i++) {
-	    if(reg.test(children[i].className)){
+	    if (reg.test(children[i].className)) {
 	    	result.push(children[i]);
 	    }
 	    if (children[i].childNodes.length > 0) {
