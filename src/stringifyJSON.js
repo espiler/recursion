@@ -5,28 +5,28 @@
 var stringifyJSON = function(obj) {
   var res = '';
   if (typeof(obj) == 'string') {
-    res = res + '"' + obj + '"';
+    res += '"' + obj + '"';
   }
   if (typeof(obj) == 'boolean' || typeof(obj) == 'number' || obj == undefined) {
-    res = res + obj;
+    res += obj;
   }
   if (Array.isArray(obj)) {
-    res = res + '['
+    res += '['
     for (var i=0;i<obj.length;i++) {
-      res = res + stringifyJSON(obj[i]) + ',';
+      res += stringifyJSON(obj[i]) + ',';
     }
     if (res.length > 1) {res = res.substring(0, res.length-1)};
-    res = res + ']';
+    res += ']';
   }
   else if (typeof(obj) == 'object' && obj != null) {
-  	res = res + '{'
+  	res += '{'
   	for (var key in obj) {
       if (key !== undefined && typeof(key) !== 'function' && obj[key] !== undefined && typeof(obj[key]) !== 'function') {
-  		res = res + '"' + key + '":' + stringifyJSON(obj[key]) + ',';
+  		res += '"' + key + '":' + stringifyJSON(obj[key]) + ',';
       }
   	}
   	if (res.length > 1) {res = res.substring(0, res.length-1)};
-    res = res + '}';
+    res += '}';
   }
   return res;
 };
