@@ -8,27 +8,18 @@ var getElementsByClassName = function(className, node){
 
 	var result = [];
 	if (node === undefined) {node = document.body}
-	var reg = new RegExp(className);
 	var children = node.childNodes;
-	if (reg.test(node.className) && node === document.body) {
+	if (node.classList && node.classList.contains(className)) {
 		result.push(node)
 	}
 	for(var i=0;i<children.length; i++) {
-	    if (reg.test(children[i].className)) {
-	    	result.push(children[i]);
-	    }
-	    if (children[i].childNodes.length > 0) {
-	    	var next = getElementsByClassName(className, children[i]);
-			if (next.length > 0) {
-				next.forEach(function(item) {
-					result.push(item);
-				});
-			}
+    	var next = getElementsByClassName(className, children[i]);
+		if (next.length > 0) {
+			next.forEach(function(item) {
+				result.push(item);
+			});
 	    }
 	}
 	return result;
 }
-
-
-
 

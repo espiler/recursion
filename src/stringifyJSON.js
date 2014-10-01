@@ -4,10 +4,10 @@
 // but you don't so you're going to write it from scratch:
 var stringifyJSON = function(obj) {
   var res = '';
-  if (typeof(obj) == 'string') {
+  if (typeof(obj) === 'string') {
     res += '"' + obj + '"';
   }
-  if (typeof(obj) == 'boolean' || typeof(obj) == 'number' || obj == undefined) {
+  if (typeof(obj) === 'boolean' || typeof(obj) === 'number' || obj == undefined) {
     res += obj;
   }
   if (Array.isArray(obj)) {
@@ -18,7 +18,7 @@ var stringifyJSON = function(obj) {
     if (res.length > 1) {res = res.substring(0, res.length-1)};
     res += ']';
   }
-  else if (typeof(obj) == 'object' && obj != null) {
+  else if (typeof(obj) === 'object' && obj != null) {
   	res += '{'
   	for (var key in obj) {
       if (key !== undefined && typeof(key) !== 'function' && obj[key] !== undefined && typeof(obj[key]) !== 'function') {
