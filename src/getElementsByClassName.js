@@ -12,7 +12,7 @@ var getElementsByClassName = function(className, node){
 	if (node.classList && node.classList.contains(className)) {
 		result.push(node)
 	}
-	for(var i=0;i<children.length; i++) {
+	for (var i=0;i<children.length; i++) {
     	var next = getElementsByClassName(className, children[i]);
 		if (next.length > 0) {
 			next.forEach(function(item) {
