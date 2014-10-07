@@ -6,8 +6,6 @@ var parseJSON = function(json) {
 	var result;
 	var arrayValue = '';
 	var onKey = true;
-	var objKey = '';
-	var objValue = '';
 	var string = false;
 	var position = 0;
 	var value = json[position];
@@ -26,6 +24,8 @@ var parseJSON = function(json) {
 	var parseObject = function(){
 		onKey = true;
 		var objResult = {};
+		var objKey = '';
+		var objValue = ''
 		next();
 		while (value !== '}') {
 			if (string === false && value === '{') {
@@ -61,7 +61,7 @@ var parseJSON = function(json) {
 		objKey = '';
 		objValue = '';
 		for (var key in objResult) {
-			if (objResult[key] === "") {
+			if (objResult[key] === "" || typeof(objResult[key]) !== 'string') {
 			} else if (!(isNaN(Number(objResult[key])))) {
 				objResult[key] = Number(objResult[key]);
 			} else if (objResult[key] === 'false') { 
@@ -103,7 +103,7 @@ var parseJSON = function(json) {
 		if (arrayValue) {arrayResult.push(arrayValue);}
         arrayValue = '';
 		for (var i=0; i<arrayResult.length; i++) {
-			if (arrayResult[i] === "") {
+			if (arrayResult[i] === "" || typeof(arrayResult[i]) !== 'string') {
 			} else if (!(isNaN(Number(arrayResult[i])))) {
 				arrayResult[i] = Number(arrayResult[i]);
 			} else if (arrayResult[i] === 'false') { 
