@@ -11,31 +11,40 @@ var parseJSON = function(json) {
 	var string = false;
 	var position = 0;
 	var value = json[position];
+	var innerArray = false;
+	var innerObject = false;
 
 	var next = function() {
 		position++;
 		value = json[position];
-		if (value === " ") {
+		if (string === false && value === " ") {
 			next();
-		}
-		if (string === false && value === '"') {
-			string = true;
-		}
-		if (string === true && value === '"') {
-		string = false;
+		} else if (value === '"') {
+			string === true ? string = false : string = true;
 		}
 	};
 	var parseObject = function(){
+		onKey = true;
+		var objResult = {};
 		next();
 		while (value !== '}') {
-			if (value === ',' && string === false) {
-				result[objKey] = objValue;
+			if (string === false && value === '{') {
+				innerObject = true;
+				objValue = parseObject();
+				innerObject = false;
+				next();
+			} else if (string === false && value === '[') {
+				innerArray = true;
+				objValue = parseArray();
+				innerArray = false;
+				next();
+			} else if (string === false && value === ',') {
+				objResult[objKey] = objValue;
 				objKey = '';
 				objValue = '';
 				onKey = true;
 				next();
-			}
-			if (value === ':' && onKey === true && string === false) {
+			} else if (string === false && onKey === true && value === ':') {
 				onKey = false;
 				next();
 			} else if (onKey === false) {
@@ -48,29 +57,42 @@ var parseJSON = function(json) {
 				next();
 			}
 		}
-		if (objKey) {result[objKey] = objValue;}
+		if (objKey) {objResult[objKey] = objValue;}
 		objKey = '';
 		objValue = '';
-		for (var key in result) {
-			if (!(isNaN(Number(result[key])))) {
-				result[key] = Number(result[key]);
-			} else if (result[key] === 'false') { 
-				result[key] = false; 
-			} else if (result[key] === 'true') { 
-				result[key] = true; 
-			} else if (result[key] === 'null') { 
-				result[key] = null;
-			} else if (typeof(result[key]) === 'string') {
-				result[key] = result[key].substring(1,result[key].length-1);
+		for (var key in objResult) {
+			if (objResult[key] === "") {
+			} else if (!(isNaN(Number(objResult[key])))) {
+				objResult[key] = Number(objResult[key]);
+			} else if (objResult[key] === 'false') { 
+				objResult[key] = false; 
+			} else if (objResult[key] === 'true') { 
+				objResult[key] = true; 
+			} else if (objResult[key] === 'null') { 
+				objResult[key] = null;
+			} else if (typeof(objResult[key]) === 'string') {
+				objResult[key] = objResult[key].substring(1,objResult[key].length-1);
 			}
 		}
-		return result;
+		if (innerObject === false) {result = objResult;}
+		return objResult;
 	};
 	var parseArray = function(){
+		var arrayResult = [];
 		next();
 		while (value !== ']') {
-			if (value === ',' && string === false) {
-				result.push(arrayValue);
+			if (value === '[' && string === false) {
+				innerArray = true;
+				arrayValue = parseArray();
+				innerArray = false;
+				next();
+			} else if (value === '{' && string === false) {
+				innerObject = true;
+				arrayValue = parseObject();
+				innerObject = false;
+				next();
+			} else if (value === ',' && string === false) {
+				arrayResult.push(arrayValue);
 				arrayValue = '';
 				next();
 			} else {
@@ -78,43 +100,30 @@ var parseJSON = function(json) {
 				next();
 			}
 		}
-		if (arrayValue) {result.push(arrayValue);}
+		if (arrayValue) {arrayResult.push(arrayValue);}
         arrayValue = '';
-		for (var i=0; i<result.length; i++) {
-			if (!(isNaN(Number(result[i])))) {
-				result[i] = Number(result[i]);
-			} else if (result[i] === 'false') { 
-				result[i] = false; 
-			} else if (result[i] === 'true') { 
-				result[i] = true; 
-			} else if (result[i] === 'null') { 
-				result[i] = null;
-			} else if (typeof(result[i]) === 'string') {
-				result[i] = result[i].substring(1,result[i].length-1);
+		for (var i=0; i<arrayResult.length; i++) {
+			if (arrayResult[i] === "") {
+			} else if (!(isNaN(Number(arrayResult[i])))) {
+				arrayResult[i] = Number(arrayResult[i]);
+			} else if (arrayResult[i] === 'false') { 
+				arrayResult[i] = false; 
+			} else if (arrayResult[i] === 'true') { 
+				arrayResult[i] = true; 
+			} else if (arrayResult[i] === 'null') { 
+				arrayResult[i] = null;
+			} else if (typeof(arrayResult[i]) === 'string') {
+				arrayResult[i] = arrayResult[i].substring(1,arrayResult[i].length-1);
 			}
 		}
-		return result;
+		if (innerArray === false) {result = arrayResult;}
+		return arrayResult;
 	};
-	
-	// while (position < json.length-1) {
-	// 	if (value === '[') {
-	// 		debugger;
-	// 		result = [];
-	// 		parseArray();
-	// 	}
-	// 	if (value === '{') {
-	// 		result = {};
-	// 		parseObject();
-	// 	}
-	// 	next();
-	// }
 
 	if (value === '[') {
-		result = [];
 		parseArray();
 	}
 	if (value === '{') {
-		result = {};
 		parseObject();
 	}
 	next();
