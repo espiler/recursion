@@ -12,6 +12,9 @@ var parseJSON = function(json) {
 	var innerArray = false;
 	var innerObject = false;
 	var escape = false;
+	var onArray = false;
+	var onObject = false;
+	var escapeVal =''
 
 	var strConvert = function(collection, key) {
 		if (collection[key] === "" || typeof(collection[key]) !== 'string') {
@@ -30,14 +33,22 @@ var parseJSON = function(json) {
 	var next = function() {
 		position++;
 		value = json[position];
-		if (escape === true) {
-			value === '\\' ? arrayValue += '\\' : arrayValue += value;
+		if (!value) {
+			throw("SyntaxError");
+		}
+		if (escape) {
+			if (onArray){
+				value === '\\' ? arrayValue += '\\' : arrayValue += value;
 				escape = false;
 				next();
-		} else if (string === false && value === " ") {
+			} else {
+				escapeVal += '\\' + value;
+			}
+		} else if (!string && value === " ") {
 			next();
+		} else if (value === "") {
 		} else if (value === '"') {
-			string === true ? string = false : string = true;
+			(string) ? string = false : string = true;
 		} else if (value === '\\') {
 			escape = true;
 			next();
@@ -45,37 +56,39 @@ var parseJSON = function(json) {
 	};
 	var parseObject = function(){
 		onKey = true;
+		onObject = true;
 		var objResult = {};
 		var objKey = '';
 		var objValue = '';
 		next();
 		while (value !== '}') {
-			if (string === false && value === '{') {
+			if (escapeVal.length > 0) {
+				(onKey) ? objKey += escapeVal : objValue += escapeVal;
+				escapeVal = '';
+			}
+			if (!string && value === '{') {
 				innerObject = true;
 				objValue = parseObject();
 				innerObject = false;
-				next();
-			} else if (string === false && value === '[') {
+			} else if (!string && value === '[') {
 				innerArray = true;
 				objValue = parseArray();
 				innerArray = false;
-				next();
-			} else if (string === false && value === ',') {
+			} else if (!string && value === ',') {
 				objResult[objKey] = objValue;
 				objKey = '';
 				objValue = '';
 				onKey = true;
-				next();
-			} else if (string === false && onKey === true && value === ':') {
+			} else if (!string && onKey && value === ':') {
 				onKey = false;
-				next();
-			} else if (onKey === false) {
+			} else if (!onKey) {
 				objValue += value;
-				next();
-			} else if (onKey === true) {
+			} else if (onKey && string) {
 				objKey = parseString();
-				next();
+			} else if (onKey) {
+				objKey += value;
 			}
+			next();
 		}
 		if (objKey) {objResult[objKey] = objValue;}
 		objKey = '';
@@ -88,19 +101,20 @@ var parseJSON = function(json) {
 	};
 	var parseArray = function(){
 		var arrayResult = [];
+		onArray = true;
 		next();
 		while (value !== ']') {
-			if (value === '[' && string === false) {
+			if (value === '[' && !string) {
 				innerArray = true;
 				arrayValue = parseArray();
 				innerArray = false;
 				next();
-			} else if (value === '{' && string === false) {
+			} else if (value === '{' && !string) {
 				innerObject = true;
 				arrayValue = parseObject();
 				innerObject = false;
 				next();
-			} else if (value === ',' && string === false) {
+			} else if (value === ',' && !string) {
 				arrayResult.push(arrayValue);
 				arrayValue = '';
 				next();
@@ -109,6 +123,7 @@ var parseJSON = function(json) {
 				next();
 			}
 		}
+		onArray = false;
 		if (arrayValue) {arrayResult.push(arrayValue);}
         arrayValue = '';
 		for (var i=0; i<arrayResult.length; i++) {
