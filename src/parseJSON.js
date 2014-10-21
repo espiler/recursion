@@ -11,21 +11,43 @@ var parseJSON = function(json) {
 	var value = json[position];
 	var innerArray = false;
 	var innerObject = false;
+	var escape = false;
 
+	var strConvert = function(collection, key) {
+		if (collection[key] === "" || typeof(collection[key]) !== 'string') {
+		} else if (!(isNaN(Number(collection[key])))) {
+			collection[key] = Number(collection[key]);
+		} else if (collection[key] === 'false') { 
+			collection[key] = false; 
+		} else if (collection[key] === 'true') { 
+			collection[key] = true; 
+		} else if (collection[key] === 'null') { 
+			collection[key] = null;
+		} else if (typeof(collection[key]) === 'string') {
+			collection[key] = collection[key].substring(1,collection[key].length-1);
+		}
+	};
 	var next = function() {
 		position++;
 		value = json[position];
-		if (string === false && value === " ") {
+		if (escape === true) {
+			value === '\\' ? arrayValue += '\\' : arrayValue += value;
+				escape = false;
+				next();
+		} else if (string === false && value === " ") {
 			next();
 		} else if (value === '"') {
 			string === true ? string = false : string = true;
+		} else if (value === '\\') {
+			escape = true;
+			next();
 		}
 	};
 	var parseObject = function(){
 		onKey = true;
 		var objResult = {};
 		var objKey = '';
-		var objValue = ''
+		var objValue = '';
 		next();
 		while (value !== '}') {
 			if (string === false && value === '{') {
@@ -50,10 +72,8 @@ var parseJSON = function(json) {
 			} else if (onKey === false) {
 				objValue += value;
 				next();
-			} else if (onKey === true && value === '"') {
-				next();
-			} else {
-				objKey += value;
+			} else if (onKey === true) {
+				objKey = parseString();
 				next();
 			}
 		}
@@ -61,18 +81,7 @@ var parseJSON = function(json) {
 		objKey = '';
 		objValue = '';
 		for (var key in objResult) {
-			if (objResult[key] === "" || typeof(objResult[key]) !== 'string') {
-			} else if (!(isNaN(Number(objResult[key])))) {
-				objResult[key] = Number(objResult[key]);
-			} else if (objResult[key] === 'false') { 
-				objResult[key] = false; 
-			} else if (objResult[key] === 'true') { 
-				objResult[key] = true; 
-			} else if (objResult[key] === 'null') { 
-				objResult[key] = null;
-			} else if (typeof(objResult[key]) === 'string') {
-				objResult[key] = objResult[key].substring(1,objResult[key].length-1);
-			}
+			strConvert(objResult, key);
 		}
 		if (innerObject === false) {result = objResult;}
 		return objResult;
@@ -103,30 +112,39 @@ var parseJSON = function(json) {
 		if (arrayValue) {arrayResult.push(arrayValue);}
         arrayValue = '';
 		for (var i=0; i<arrayResult.length; i++) {
-			if (arrayResult[i] === "" || typeof(arrayResult[i]) !== 'string') {
-			} else if (!(isNaN(Number(arrayResult[i])))) {
-				arrayResult[i] = Number(arrayResult[i]);
-			} else if (arrayResult[i] === 'false') { 
-				arrayResult[i] = false; 
-			} else if (arrayResult[i] === 'true') { 
-				arrayResult[i] = true; 
-			} else if (arrayResult[i] === 'null') { 
-				arrayResult[i] = null;
-			} else if (typeof(arrayResult[i]) === 'string') {
-				arrayResult[i] = arrayResult[i].substring(1,arrayResult[i].length-1);
-			}
+			strConvert(arrayResult, i);
 		}
 		if (innerArray === false) {result = arrayResult;}
 		return arrayResult;
 	};
+	var parseString = function(){
+		var stringResult = '';
+		next();
+		while (value !== '"') {
+			stringResult += value;
+			next();
+		}
+		return stringResult;
+	}
+
+	var parseNumber = function(){
+		var numResult = '';
+		while (Number(value) !== NaN && value !== undefined) {
+			numResult += value;
+			next();
+		}
+		return Number(numResult);
+	}
 
 	if (value === '[') {
 		parseArray();
-	}
-	if (value === '{') {
+	} else if (value === '{') {
 		parseObject();
+	} else if (value === '"') {
+		return parseString();
+	} else if (Number(value) !== NaN) {
+		return parseNumber();
 	}
-	next();
 
 	return result;
 };
