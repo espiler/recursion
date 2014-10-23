@@ -34,7 +34,7 @@ var parseJSON = function(json) {
 		position++;
 		value = json[position];
 		if (!value) {
-			throw("SyntaxError");
+			throw("Unparseable String!");
 		}
 		if (escape) {
 			if (onArray){
@@ -130,6 +130,7 @@ var parseJSON = function(json) {
 			strConvert(arrayResult, i);
 		}
 		if (innerArray === false) {result = arrayResult;}
+		if (string) { throw("Unparseable String!"); }
 		return arrayResult;
 	};
 	var parseString = function(){
