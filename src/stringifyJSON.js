@@ -5,7 +5,7 @@
 var stringifyJSON = function(obj) {
   var res = '';
   if (typeof(obj) === 'string') {
-    res += '"' + obj + '"';
+    res += '"' + obj.replace(/\\/g, '\\\\').replace(/"/g, '\"') + '"';
   }
   if (typeof(obj) === 'boolean' || typeof(obj) === 'number' || obj === null) {
     res += obj;

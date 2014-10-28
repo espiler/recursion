@@ -7,18 +7,13 @@
 var getElementsByClassName = function(className, node){
 
 	var result = [];
-	if (node === undefined) {node = document.body}
+	node = node || document.body;
 	var children = node.childNodes;
 	if (node.classList && node.classList.contains(className)) {
 		result.push(node)
 	}
 	for (var i=0;i<children.length; i++) {
-    	var next = getElementsByClassName(className, children[i]);
-		if (next.length > 0) {
-			next.forEach(function(item) {
-				result.push(item);
-			});
-	    }
+		result = result.concat(getElementsByClassName(className, children[i]));
 	}
 	return result;
 }

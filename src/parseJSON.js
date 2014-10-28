@@ -3,6 +3,9 @@
 
 // but you're not, so you'll write it from scratch:
 var parseJSON = function(json) {
+
+	json = String(json).replace(/[\t\r\n]/g, '');
+	
 	var result;
 	var arrayValue = '';
 	var onKey = true;
