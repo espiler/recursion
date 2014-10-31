@@ -5,7 +5,7 @@
 var parseJSON = function(json) {
 
 	json = String(json).replace(/[\t\r\n]/g, '');
-	
+
 	var result;
 	var arrayValue = '';
 	var onKey = true;
@@ -16,11 +16,11 @@ var parseJSON = function(json) {
 	var innerObject = false;
 	var escape = false;
 	var onArray = false;
-	var onObject = false;
 	var escapeVal =''
 
 	var strConvert = function(collection, key) {
 		if (collection[key] === "" || typeof(collection[key]) !== 'string') {
+			
 		} else if (!(isNaN(Number(collection[key])))) {
 			collection[key] = Number(collection[key]);
 		} else if (collection[key] === 'false') { 
@@ -59,7 +59,6 @@ var parseJSON = function(json) {
 	};
 	var parseObject = function(){
 		onKey = true;
-		onObject = true;
 		var objResult = {};
 		var objKey = '';
 		var objValue = '';
@@ -99,7 +98,7 @@ var parseJSON = function(json) {
 		for (var key in objResult) {
 			strConvert(objResult, key);
 		}
-		if (innerObject === false) {result = objResult;}
+		if (!innerObject) {result = objResult;}
 		return objResult;
 	};
 	var parseArray = function(){
@@ -132,7 +131,7 @@ var parseJSON = function(json) {
 		for (var i=0; i<arrayResult.length; i++) {
 			strConvert(arrayResult, i);
 		}
-		if (innerArray === false) {result = arrayResult;}
+		if (!innerArray) {result = arrayResult;}
 		if (string) { throw("Unparseable String!"); }
 		return arrayResult;
 	};
